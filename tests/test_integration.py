@@ -138,8 +138,8 @@ class TestEndToEnd:
 
         total_themes = sum(len(themes) for themes in generator.TRENDS.values())
 
-        # 110テーマ以上あるはず（11カテゴリー × 10テーマ）
-        assert total_themes >= 110
+        # 100テーマ以上あるはず（10カテゴリー × 10テーマ）
+        assert total_themes >= 100
 
     def test_business_model_coverage(self):
         """ビジネスモデルのカバレッジ"""
