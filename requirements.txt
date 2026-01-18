@@ -1,0 +1,7 @@
+# Business Planning Maker - Requirements
+
+# No external dependencies required for core functionality
+# The system uses Claude CLI (claude command) which must be installed separately
+
+# Optional dependencies for enhanced functionality:
+# python-dateutil>=2.8.0
