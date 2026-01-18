@@ -15,7 +15,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from src.generators import BusinessPlanGenerator
 from src.evaluators import PlanEvaluator
-from src.utils import PlanStorage, setup_logging
+from src.utils import PlanStorage, setup_logging, PlanAnalytics
 
 
 def generate_single_plan(iteration: int, previous_plans=None, storage=None) -> bool:
@@ -191,6 +191,108 @@ def list_top_plans(n: int = 10) -> None:
         print()
 
 
+def show_analytics() -> None:
+    """統計分析を表示"""
+    storage = PlanStorage()
+    plans = storage.load_all_plans()
+
+    if not plans:
+        print("プランがまだ生成されていません。")
+        return
+
+    print(f"\n=== ビジネスプラン統計分析 ===\n")
+    print(f"総プラン数: {len(plans)}\n")
+
+    # 基本統計
+    stats = PlanAnalytics.calculate_statistics(plans)
+    if stats:
+        print("## スコア統計")
+        for name, values in stats.items():
+            print(f"\n### {name}")
+            for key, value in values.items():
+                print(f"  {key}: {value:.1f}")
+
+    # カテゴリ分布
+    category_dist = PlanAnalytics.analyze_category_distribution(plans)
+    if category_dist:
+        print("\n\n## カテゴリ別分布")
+        for cat, count in sorted(category_dist.items(), key=lambda x: x[1], reverse=True):
+            print(f"  {cat}: {count}件")
+
+    # 市場トレンド
+    market_trends = PlanAnalytics.analyze_market_trends(plans)
+    if market_trends:
+        print("\n\n## 市場トレンド")
+        for key, value in market_trends.items():
+            if isinstance(value, float):
+                print(f"  {key}: {value:.1f}")
+
+    # インサイト
+    insights = PlanAnalytics.generate_insights(plans)
+    if insights:
+        print("\n\n## 主要なインサイト")
+        for insight in insights:
+            print(f"  • {insight}")
+
+    print()
+
+
+def show_comparison(plan_index1: int, plan_index2: int) -> None:
+    """2つのプランを比較
+
+    Args:
+        plan_index1: プラン1のインデックス（スコア順）
+        plan_index2: プラン2のインデックス（スコア順）
+    """
+    storage = PlanStorage()
+    plans = storage.get_best_plans(100)  # 上位100件から選択
+
+    if not plans:
+        print("プランがまだ生成されていません。")
+        return
+
+    if plan_index1 < 1 or plan_index1 > len(plans):
+        print(f"エラー: plan_index1は1-{len(plans)}の範囲で指定してください")
+        return
+
+    if plan_index2 < 1 or plan_index2 > len(plans):
+        print(f"エラー: plan_index2は1-{len(plans)}の範囲で指定してください")
+        return
+
+    plan1 = plans[plan_index1 - 1]
+    plan2 = plans[plan_index2 - 1]
+
+    report = PlanAnalytics.generate_comparison_report(plan1, plan2)
+    print(report)
+
+
+def show_evaluation(plan_index: int = 1) -> None:
+    """プランの詳細評価を表示
+
+    Args:
+        plan_index: プランのインデックス（スコア順、デフォルト: 1）
+    """
+    storage = PlanStorage()
+    plans = storage.get_best_plans(100)
+
+    if not plans:
+        print("プランがまだ生成されていません。")
+        return
+
+    if plan_index < 1 or plan_index > len(plans):
+        print(f"エラー: plan_indexは1-{len(plans)}の範囲で指定してください")
+        return
+
+    plan = plans[plan_index - 1]
+
+    # 評価レポート生成
+    evaluator = PlanEvaluator(benchmark_plans=plans)
+    evaluator.evaluate(plan)
+    report = evaluator.generate_evaluation_report(plan)
+
+    print(report)
+
+
 def main():
     """メイン関数"""
     parser = argparse.ArgumentParser(
@@ -203,6 +305,9 @@ def main():
   %(prog)s --continuous --interval 10  # 10分間隔で無限生成
   %(prog)s --summary              # サマリーを表示
   %(prog)s --top 10               # トップ10を表示
+  %(prog)s --analytics            # 統計分析を表示
+  %(prog)s --compare 1 2          # プラン1とプラン2を比較
+  %(prog)s --evaluate 1           # プラン1の詳細評価を表示
         """
     )
 
@@ -247,6 +352,29 @@ def main():
     )
 
     parser.add_argument(
+        "--analytics",
+        action="store_true",
+        help="統計分析を表示"
+    )
+
+    parser.add_argument(
+        "--compare",
+        type=int,
+        nargs=2,
+        metavar=("INDEX1", "INDEX2"),
+        help="2つのプランを比較（スコア順のインデックスを指定）"
+    )
+
+    parser.add_argument(
+        "--evaluate",
+        type=int,
+        metavar="INDEX",
+        nargs="?",
+        const=1,
+        help="プランの詳細評価を表示（スコア順のインデックス、デフォルト: 1）"
+    )
+
+    parser.add_argument(
         "--iteration-start",
         type=int,
         default=1,
@@ -254,6 +382,21 @@ def main():
     )
 
     args = parser.parse_args()
+
+    # 評価モード
+    if args.evaluate is not None:
+        show_evaluation(args.evaluate)
+        return
+
+    # 比較モード
+    if args.compare:
+        show_comparison(args.compare[0], args.compare[1])
+        return
+
+    # 分析モード
+    if args.analytics:
+        show_analytics()
+        return
 
     # サマリーモード
     if args.summary:

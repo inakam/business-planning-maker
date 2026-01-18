@@ -1,0 +1,68 @@
+{
+  "id": "c64061dd-b350-4b49-be51-6d427a639764",
+  "title": "DeFiレンディングプラットフォーム - 利用量ベース課金モデル",
+  "category": "CleanTech",
+  "created_at": "2026-01-18T19:44:05.242203",
+  "iteration": 1,
+  "problem_statement": "特定業種垂直市場は現在、手動プロセスと非効率なシステムに依存しており、時間とリソースを浪費しています。",
+  "solution": "AIと自動化を活用したDeFiレンディングプラットフォームプラットフォームを提供します。",
+  "value_proposition": "時間を80%削減し、コストを50%削減するDeFiレンディングプラットフォームソリューション。",
+  "business_model": "利用量ベース課金モデル",
+  "market_analysis": {
+    "market_size": 980,
+    "market_growth_rate": 13,
+    "target_audience": "特定業種垂直市場",
+    "market_stage": "growing",
+    "competitive_landscape": "競合は存在するが、AIによる差別化が可能",
+    "key_success_factors": [
+      "ユーザー体験の最適化",
+      "AIモデルの精度向上",
+      "顧客獲得コストの最適化",
+      "パートナーシップ構築"
+    ]
+  },
+  "financial_projection": {
+    "year1_revenue": 374000,
+    "year3_revenue": 18000000,
+    "year5_revenue": 27000000,
+    "initial_investment": 4229000,
+    "break_even_months": 32,
+    "profit_margin_year3": 20,
+    "customer_cac": 2667,
+    "customer_ltv": 10875
+  },
+  "key_milestones": [
+    "MVP開発（3ヶ月）",
+    "初期顧客10社獲得（6ヶ月）",
+    "シード資金調達（12ヶ月）",
+    "機能拡張と市場拡大（18ヶ月）"
+  ],
+  "team_requirements": [
+    "CEO/ビジネスリーダー",
+    "CTO/技術リーダー",
+    "AIエンジニア",
+    "プロダクトマネージャー",
+    "営業・マーケティング"
+  ],
+  "risk_factors": [
+    "技術的実現のリスク",
+    "市場受容の不確実性",
+    "競合の台頭"
+  ],
+  "mitigation_strategies": [
+    "段階的アプローチでの開発",
+    "初期顧客との緊密な協働",
+    "継続的なイノベーション"
+  ],
+  "feasibility_score": 100.0,
+  "profitability_score": 100.0,
+  "innovation_score": 100.0,
+  "overall_score": 100.0,
+  "reasoning": "特定業種垂直市場向けのDeFiレンディングプラットフォームは、市場ニーズが高く、利用量ベース課金モデルで収益化が可能。",
+  "references": [],
+  "tags": [
+    "defiレンディングプラットフォーム",
+    "fintech",
+    "利用量ベース課金モデル"
+  ]
+}
