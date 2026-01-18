@@ -4,6 +4,11 @@
 fastapi>=0.104.0
 uvicorn[standard]>=0.24.0
 
+# Testing dependencies
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-asyncio>=0.21.0
+
 # Note: The core system works without these dependencies using only the Python standard library
-# These are only required for the API server and web UI:
+# These are only required for the API server, web UI, and tests:
 # pip install -r requirements.txt
