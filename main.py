@@ -18,6 +18,30 @@ from src.evaluators import PlanEvaluator
 from src.utils import PlanStorage, setup_logging, PlanAnalytics
 
 
+def start_api_server(host: str = "0.0.0.0", port: int = 8000, reload: bool = True):
+    """APIサーバーを起動
+
+    Args:
+        host: バインドするホスト
+        port: バインドするポート
+        reload: ホットリロード有効無効
+    """
+    try:
+        import uvicorn
+        from api_server import app
+        uvicorn.run(
+            "api_server:app",
+            host=host,
+            port=port,
+            reload=reload,
+            log_level="info"
+        )
+    except ImportError:
+        print("Error: FastAPI and Uvicorn are required to run the API server.")
+        print("Please install them with: pip install fastapi uvicorn")
+        sys.exit(1)
+
+
 def generate_single_plan(iteration: int, previous_plans=None, storage=None) -> bool:
     """単一のビジネスプランを生成
 
@@ -308,6 +332,8 @@ def main():
   %(prog)s --analytics            # 統計分析を表示
   %(prog)s --compare 1 2          # プラン1とプラン2を比較
   %(prog)s --evaluate 1           # プラン1の詳細評価を表示
+  %(prog)s --server               # APIサーバーを起動（http://localhost:8000）
+  %(prog)s --server --port 9000   # ポート9000でAPIサーバー起動
         """
     )
 
@@ -381,7 +407,32 @@ def main():
         help="開始イテレーション番号（デフォルト: 1）"
     )
 
+    parser.add_argument(
+        "--server",
+        action="store_true",
+        help="APIサーバーを起動"
+    )
+
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=8000,
+        help="APIサーバーのポート（デフォルト: 8000）"
+    )
+
+    parser.add_argument(
+        "--host",
+        type=str,
+        default="0.0.0.0",
+        help="APIサーバーのホスト（デフォルト: 0.0.0.0）"
+    )
+
     args = parser.parse_args()
+
+    # サーバーモード
+    if args.server:
+        start_api_server(host=args.host, port=args.port)
+        return
 
     # 評価モード
     if args.evaluate is not None:

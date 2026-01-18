@@ -1,7 +1,9 @@
 # Business Planning Maker - Requirements
 
-# No external dependencies required for core functionality
-# The system uses Claude CLI (claude command) which must be installed separately
+# Core dependencies (optional, for API server)
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
 
-# Optional dependencies for enhanced functionality:
-# python-dateutil>=2.8.0
+# Note: The core system works without these dependencies using only the Python standard library
+# These are only required for the API server and web UI:
+# pip install -r requirements.txt

@@ -8,6 +8,9 @@ Agentic AIとしてビジネスプランを無限に生成し続けるシステ�
 - 🔹 **多角的評価**: 実現可能性、収益性、革新性の3軸で評価
 - 🔹 **現実的**: 投資家や起業家から見ても魅力的なプランを生成
 - 🔹 **継続的改善**: Ralph Loopと連動して無限に改善
+- 🌐 **REST API**: FastAPIベースのAPIサーバー
+- 🎨 **Web UI**: シンプルなWebインターフェース
+- 📊 **分析機能**: 統計分析とプラン比較
 
 ## インストール
 
@@ -15,13 +18,18 @@ Agentic AIとしてビジネスプランを無限に生成し続けるシステ�
 # Claude CLIのインストール（別途必要）
 # https://docs.anthropic.com/claude/reference/claude-cli
 
-# 依存関係（Python 3.8+）
-# 外部依存はありません。標準ライブラリのみで動作します。
+# 基本機能 - 標準ライブラリのみで動作
+python main.py --help
+
+# APIサーバー機能 - 依存関係のインストール
+pip install -r requirements.txt
 ```
 
 ## 使用方法
 
-### 基本的な使用方法
+### コマンドラインインターフェース
+
+#### 基本的な使用方法
 
 ```bash
 # 1つのプランを生成
@@ -37,7 +45,7 @@ python main.py --continuous
 python main.py --continuous --interval 10 --max-iterations 100
 ```
 
-### 生成されたプランの確認
+#### 生成されたプランの確認
 
 ```bash
 # サマリー表示
@@ -45,6 +53,62 @@ python main.py --summary
 
 # トップ10のプランを表示
 python main.py --top 10
+
+# 統計分析
+python main.py --analytics
+
+# プラン比較（スコア順のインデックスを指定）
+python main.py --compare 1 2
+
+# 詳細評価
+python main.py --evaluate 1
+```
+
+### APIサーバー
+
+#### サーバー起動
+
+```bash
+# デフォルト設定（ポート8000）
+python main.py --server
+
+# カスタムポート
+python main.py --server --port 9000
+
+# カスタムホストとポート
+python main.py --server --host 127.0.0.1 --port 8080
+```
+
+サーバー起動後、以下にアクセス：
+
+- **Web UI**: http://localhost:8000/web
+- **APIドキュメント**: http://localhost:8000/docs
+- **Redoc**: http://localhost:8000/redoc
+
+#### APIエンドポイント
+
+| エンドポイント | 説明 |
+|--------------|------|
+| `GET /` | API情報 |
+| `GET /web` | Web UI |
+| `GET /api/health` | ヘルスチェック |
+| `GET /api/plans` | プラン一覧（`?limit=10&offset=0`） |
+| `GET /api/plans/{id}` | プラン詳細 |
+| `POST /api/generate` | プラン生成 |
+| `GET /api/analytics` | 統計分析 |
+| `GET /api/compare/{id1}/{id2}` | プラン比較 |
+
+#### API使用例
+
+```bash
+# プラン一覧取得
+curl http://localhost:8000/api/plans?limit=10
+
+# プラン生成
+curl -X POST http://localhost:8000/api/generate -H "Content-Type: application/json" -d '{"count": 1}'
+
+# 統計分析
+curl http://localhost:8000/api/analytics
 ```
 
 ## 出力
@@ -59,44 +123,50 @@ python main.py --top 10
 
 各ビジネスプランは以下の3つの観点から評価されます（0-100点）：
 
-### 1. 実現可能性 (Feasibility) - 35%
-- 市場成長率
-- 市場段階
-- 損益分岐期間
-- LTV/CAC比率
-- 投資対効果（ROI）
-- チーム要件の具体性
-- リスク対策の充実度
+### 1. 実現可能性 (Feasibility)
+- 市場成長率（20点）
+- 市場段階（15点）
+- 損益分岐期間（15点）
+- LTV/CAC比率（20点）
+- ROI（15点）
+- チーム要件（10点）
+- リスク対策（5点）
 
-### 2. 収益性 (Profitability) - 45%
-- 5年目の売上規模
-- 3年目の利益率
-- 成長率（3年目/1年目）
-- 市場サイズ
-- 市場成長ポテンシャル
+### 2. 収益性 (Profitability)
+- 5年目売上（25点）
+- 3年目利益率（20点）
+- 成長率（20点）
+- 市場サイズ（20点）
+- 成長ポテンシャル（15点）
 
-### 3. 革新性 (Innovation) - 20%
-- カテゴリー（AI/ML、CleanTech等）
-- 市場段階（emerging、growing等）
-- 問題提起の具体性
-- ソリューションの革新性キーワード
-- 成功要因の多様性
-- 推論プロセスの充実度
+### 3. 革新性 (Innovation)
+- カテゴリー（20点）
+- 市場段階（20点）
+- 問題提起（20点）
+- 革新キーワード（10点）
+- 成功要因（15点）
+- 推論プロセス（15点）
+
+**カテゴリ別の評価重み付け**:
+- AI/ML: 革新性30%、収益性40%、実現可能性30%
+- CleanTech: 革新性35%、収益性35%、実現可能性30%
+- SaaS: 革新性20%、収益性45%、実現可能性35%
+- など...
 
 ## カテゴリー
 
-以下のカテゴリーでビジネスプランを生成：
+以下の11カテゴリーでビジネスプランを生成（各10テーマ）：
 
-- SaaS
-- Marketplace
-- AI/ML
-- FinTech
-- HealthTech
-- EdTech
-- CleanTech
-- E-commerce
-- Consumer
-- B2B
+- **SaaS** - サブスクリプション、B2B SaaS等
+- **Marketplace** - B2B/Consumerマーケットプレイス
+- **AI/ML** - 生成AI、分析AI等
+- **FinTech** - 決済、借入、保険等
+- **HealthTech** - リモート医療、診断AI等
+- **EdTech** - リスキリング、LMS等
+- **CleanTech** - カーボンフットプリント、再生可能エネルギー等
+- **E-commerce** - D2C、ライブコマース等
+- **Consumer** - ヘルスケア、フィットネス等
+- **B2B** - 調達、サプライチェーン等
 
 ## プロジェクト構造
 
@@ -104,16 +174,64 @@ python main.py --top 10
 business-planning-maker/
 ├── src/
 │   ├── models/          # データモデル
+│   │   └── business_plan.py
 │   ├── generators/      # ビジネスプラン生成器
+│   │   └── business_plan_generator.py
 │   ├── evaluators/      # プラン評価器
-│   └── utils/           # ユーティリティ（保存、ロギング）
+│   │   └── plan_evaluator.py
+│   └── utils/           # ユーティリティ
+│       ├── storage.py    # 保存・読み込み
+│       └── analytics.py  # 統計分析
 ├── output/
 │   ├── markdown/        # Markdown出力
 │   ├── json/            # JSON出力
 │   └── summary_*.md     # サマリーレポート
 ├── logs/                # ログファイル
 ├── main.py              # メイン実行スクリプト
+├── api_server.py        # FastAPIサーバー
 └── README.md
+```
+
+## 高度な使用方法
+
+### 分析機能
+
+```bash
+# 統計分析（平均、中央値、標準偏差等）
+python main.py --analytics
+
+# 出力例:
+# - スコア統計
+# - カテゴリ別分布
+# - 市場トレンド
+# - 主要なインサイト
+```
+
+### プラン比較
+
+```bash
+# スコア順のインデックスで2つのプランを比較
+python main.py --compare 1 2
+
+# 出力例:
+# - プラン概要
+# - 評価スコア比較
+# - 市場分析比較
+# - 財務予測比較
+```
+
+### 詳細評価
+
+```bash
+# 特定プランの詳細評価レポート
+python main.py --evaluate 1
+
+# 出力例:
+# - 総合評価
+# - 強み
+# - 課題
+# - 推奨事項
+# - ベンチマーク比較
 ```
 
 ## Ralph Loopとの連携
